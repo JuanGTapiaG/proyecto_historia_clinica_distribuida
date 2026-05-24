@@ -169,7 +169,7 @@ Antes de desplegar el sistema, asegúrese de tener instalado:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <url-del-repositorio>
+git clone https://github.com/JuanGTapiaG/proyecto_historia_clinica_distribuida
 cd proyecto_historia_clinica_distribuida
 ```
 
