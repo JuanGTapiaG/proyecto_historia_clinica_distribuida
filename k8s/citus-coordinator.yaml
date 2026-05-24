@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: citus-coordinator
+  namespace: historia-clinica-distribuida
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: citus-coordinator
+  template:
+    metadata:
+      labels:
+        app: citus-coordinator
+    spec:
+      containers:
+      - name: citus
+        image: citusdata/citus:11.2
+        env:
+        - name: POSTGRES_DB
+          value: historia_clinica
+        - name: POSTGRES_USER
+          value: admin
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: password
+        ports:
+        - containerPort: 5432
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - admin
+            - -d
+            - historia_clinica
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: citus-coordinator
+  namespace: historia-clinica-distribuida
+spec:
+  selector:
+    app: citus-coordinator
+  ports:
+  - port: 5432
+    targetPort: 5432

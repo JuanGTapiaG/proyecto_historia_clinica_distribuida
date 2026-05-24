@@ -1,0 +1,278 @@
+{
+  "info": {
+    "name": "Historia Clínica Distribuida - 3 Nodos",
+    "description": "Colección para probar CRUD FHIR en 3 nodos geográficos (Sincelejo, Bogotá, Medellín)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "minikube_ip",
+      "value": "192.168.49.2",
+      "type": "string"
+    },
+    {
+      "key": "base_url",
+      "value": "http://{{minikube_ip}}:30080/fhir",
+      "type": "string"
+    },
+    {
+      "key": "patient_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Health Check",
+      "description": "Verificar que el servidor FHIR está funcionando",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/metadata",
+          "host": ["{{base_url}}"],
+          "path": ["metadata"]
+        }
+      }
+    },
+    {
+      "name": "02 - Patient - Crear en Sincelejo",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/fhir+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceType\": \"Patient\",\n  \"identifier\": [{\n    \"system\": \"http://hospital.gov.co/id\",\n    \"value\": \"123456789\"\n  }],\n  \"name\": [{\n    \"use\": \"official\",\n    \"family\": \"Gómez\",\n    \"given\": [\"Ana María\"]\n  }],\n  \"gender\": \"female\",\n  \"birthDate\": \"1990-05-15\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/Patient",
+          "host": ["{{base_url}}"],
+          "path": ["Patient"]
+        }
+      }
+    },
+    {
+      "name": "03 - Patient - Crear en Bogotá",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/fhir+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceType\": \"Patient\",\n  \"identifier\": [{\n    \"system\": \"http://hospital.gov.co/id\",\n    \"value\": \"987654321\"\n  }],\n  \"name\": [{\n    \"use\": \"official\",\n    \"family\": \"Rodríguez\",\n    \"given\": [\"Carlos\"]\n  }],\n  \"gender\": \"male\",\n  \"birthDate\": \"1985-10-20\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/Patient",
+          "host": ["{{base_url}}"],
+          "path": ["Patient"]
+        }
+      }
+    },
+    {
+      "name": "04 - Patient - Crear en Medellín",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/fhir+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceType\": \"Patient\",\n  \"identifier\": [{\n    \"system\": \"http://hospital.gov.co/id\",\n    \"value\": \"555555555\"\n  }],\n  \"name\": [{\n    \"use\": \"official\",\n    \"family\": \"Martínez\",\n    \"given\": [\"Laura\"]\n  }],\n  \"gender\": \"female\",\n  \"birthDate\": \"1995-03-08\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/Patient",
+          "host": ["{{base_url}}"],
+          "path": ["Patient"]
+        }
+      }
+    },
+    {
+      "name": "05 - Patient - Buscar por identificación",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/Patient?identifier=123456789",
+          "host": ["{{base_url}}"],
+          "path": ["Patient"],
+          "query": [
+            {
+              "key": "identifier",
+              "value": "123456789"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "06 - Observation - Registrar Signos Vitales (Triage)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/fhir+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceType\": \"Observation\",\n  \"status\": \"final\",\n  \"category\": [{\n    \"coding\": [{\n      \"system\": \"http://terminology.hl7.org/CodeSystem/observation-category\",\n      \"code\": \"vital-signs\"\n    }]\n  }],\n  \"code\": {\n    \"coding\": [{\n      \"system\": \"http://loinc.org\",\n      \"code\": \"85354-9\",\n      \"display\": \"Signos vitales panel\"\n    }]\n  },\n  \"subject\": {\n    \"reference\": \"Patient/{{patient_id}}\"\n  },\n  \"effectiveDateTime\": \"{{$timestamp}}\",\n  \"component\": [\n    {\n      \"code\": {\"coding\": [{\"system\": \"http://loinc.org\", \"code\": \"8480-6\", \"display\": \"Presión arterial\"}]},\n      \"valueQuantity\": {\"value\": 118, \"unit\": \"mmHg\"}\n    },\n    {\n      \"code\": {\"coding\": [{\"system\": \"http://loinc.org\", \"code\": \"8867-4\", \"display\": \"Frecuencia cardíaca\"}]},\n      \"valueQuantity\": {\"value\": 72, \"unit\": \"/min\"}\n    },\n    {\n      \"code\": {\"coding\": [{\"system\": \"http://loinc.org\", \"code\": \"8310-5\", \"display\": \"Temperatura corporal\"}]},\n      \"valueQuantity\": {\"value\": 36.5, \"unit\": \"°C\"}\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/Observation",
+          "host": ["{{base_url}}"],
+          "path": ["Observation"]
+        }
+      }
+    },
+    {
+      "name": "07 - Condition - Registrar Diagnóstico",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/fhir+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceType\": \"Condition\",\n  \"clinicalStatus\": {\n    \"coding\": [{\n      \"system\": \"http://terminology.hl7.org/CodeSystem/condition-clinical\",\n      \"code\": \"active\"\n    }]\n  },\n  \"code\": {\n    \"coding\": [{\n      \"display\": \"Hipertensión esencial\"\n    }]\n  },\n  \"subject\": {\n    \"reference\": \"Patient/{{patient_id}}\"\n  },\n  \"recordedDate\": \"{{$timestamp}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/Condition",
+          "host": ["{{base_url}}"],
+          "path": ["Condition"]
+        }
+      }
+    },
+    {
+      "name": "08 - MedicationRequest - Prescribir Medicamento",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/fhir+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceType\": \"MedicationRequest\",\n  \"status\": \"active\",\n  \"intent\": \"order\",\n  \"medicationCodeableConcept\": {\n    \"coding\": [{\n      \"display\": \"Enalapril 10mg\"\n    }]\n  },\n  \"subject\": {\n    \"reference\": \"Patient/{{patient_id}}\"\n  },\n  \"dosageInstruction\": [{\n    \"text\": \"1 tableta cada 12 horas\",\n    \"route\": {\n      \"coding\": [{\"display\": \"Oral\"}]\n    }\n  }]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/MedicationRequest",
+          "host": ["{{base_url}}"],
+          "path": ["MedicationRequest"]
+        }
+      }
+    },
+    {
+      "name": "09 - Historia Clínica Completa del Paciente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/Patient/{{patient_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["Patient", "{{patient_id}}"]
+        }
+      }
+    },
+    {
+      "name": "10 - Obtener Signos Vitales del Paciente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/Observation?subject=Patient/{{patient_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["Observation"],
+          "query": [
+            {
+              "key": "subject",
+              "value": "Patient/{{patient_id}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "11 - Obtener Diagnósticos del Paciente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/Condition?subject=Patient/{{patient_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["Condition"],
+          "query": [
+            {
+              "key": "subject",
+              "value": "Patient/{{patient_id}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "12 - Listar Todos los Pacientes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/Patient?_count=20",
+          "host": ["{{base_url}}"],
+          "path": ["Patient"],
+          "query": [
+            {
+              "key": "_count",
+              "value": "20"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "13 - Prueba de Tolerancia - Sistema debe seguir funcionando",
+      "description": "Esta prueba se ejecuta después de simular la caída de un nodo. El sistema debe seguir respondiendo.",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Sistema responde aunque un nodo haya fallado', function() {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Respuesta contiene datos', function() {",
+              "  pm.expect(pm.response.text()).to.not.be.empty;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/metadata",
+          "host": ["{{base_url}}"],
+          "path": ["metadata"]
+        }
+      }
+    }
+  ]
+}

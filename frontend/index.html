@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia Clínica Distribuida | 3 Nodos</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 Historia Clínica Distribuida</h1>
+        <div class="nodo-selector">
+            <label>🌍 Nodo Activo:</label>
+            <select id="nodoSelector">
+                <option value="balanceado">⚖️ Balanceado (Round Robin)</option>
+                <option value="sincelejo">🏙️ Sincelejo (Costa)</option>
+                <option value="bogota">🏔️ Bogotá (Centro)</option>
+                <option value="medellin">🌆 Medellín (Antioquia)</option>
+            </select>
+            <span id="nodoStatus" class="status-badge">✅ Conectado</span>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Módulo 1: Admisión -->
+        <div class="card">
+            <h2>📋 Módulo de Admisión</h2>
+            <form id="admissionForm">
+                <input type="text" id="nombre" placeholder="Nombre completo" required>
+                <input type="text" id="documento" placeholder="N° Documento" required>
+                <input type="date" id="fechaNacimiento">
+                <select id="sexo">
+                    <option value="male">Masculino</option>
+                    <option value="female">Femenino</option>
+                    <option value="other">Otro</option>
+                </select>
+                <button type="submit">Registrar Paciente</button>
+            </form>
+            <div id="admissionResult"></div>
+        </div>
+
+        <!-- Módulo 2: Triage -->
+        <div class="card">
+            <h2>🩺 Módulo de Triage</h2>
+            <form id="triageForm">
+                <input type="text" id="pacienteId" placeholder="ID del Paciente" required>
+                <input type="number" id="presionArterial" placeholder="Presión Arterial" step="5">
+                <input type="number" id="frecuenciaCardiaca" placeholder="Frecuencia Cardíaca">
+                <input type="number" id="temperatura" placeholder="Temperatura" step="0.1">
+                <select id="nivelDolor">
+                    <option value="1">Dolor leve (1)</option>
+                    <option value="3">Dolor moderado (3)</option>
+                    <option value="5">Dolor severo (5)</option>
+                    <option value="7">Dolor muy severo (7)</option>
+                    <option value="10">Dolor extremo (10)</option>
+                </select>
+                <button type="submit">Registrar Triage</button>
+            </form>
+            <div id="triageResult">
+                <div id="clasificacionTriage" class="triage-level"></div>
+            </div>
+        </div>
+
+        <!-- Módulo 3: Médico -->
+        <div class="card">
+            <h2>👨‍⚕️ Módulo Médico</h2>
+            <form id="medicalForm">
+                <input type="text" id="pacienteIdMed" placeholder="ID del Paciente" required>
+                <input type="text" id="diagnostico" placeholder="Diagnóstico" required>
+                <input type="text" id="medicamento" placeholder="Medicamento">
+                <input type="text" id="dosis" placeholder="Dosis">
+                <button type="submit">Registrar Atención</button>
+            </form>
+            <div id="medicalResult"></div>
+        </div>
+
+        <!-- Módulo 4: Historia Clínica -->
+        <div class="card full-width">
+            <h2>📄 Historia Clínica Consolidada</h2>
+            <input type="text" id="buscarPaciente" placeholder="Buscar por documento o nombre" style="width: 300px;">
+            <button onclick="consultarHistoriaClinica()">Consultar</button>
+            <div id="historiaResult" class="historia-container"></div>
+        </div>
+
+        <!-- Módulo 5: Reportes -->
+        <div class="card full-width">
+            <h2>📊 Dashboard de Reportes</h2>
+            <div class="report-grid">
+                <div class="report-card">
+                    <h3>Pacientes por Nodo</h3>
+                    <canvas id="pacientesPorNodoChart" width="300" height="200"></canvas>
+                </div>
+                <div class="report-card">
+                    <h3>Diagnósticos Frecuentes</h3>
+                    <canvas id="diagnosticosChart" width="300" height="200"></canvas>
+                </div>
+                <div class="report-card">
+                    <h3>Tiempos de Atención</h3>
+                    <div id="tiemposAtencion"></div>
+                </div>
+            </div>
+            <button onclick="actualizarReportes()">🔄 Actualizar Reportes</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

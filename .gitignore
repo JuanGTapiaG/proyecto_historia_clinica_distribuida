@@ -1,0 +1,57 @@
+# Kubernetes - archivos sensibles
+*.secret.yaml
+kubeconfig
+*.kubeconfig
+
+# Archivos del sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+*.pid
+*.seed
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-*
+.project
+.classpath
+
+# Directorios temporales
+temp/
+tmp/
+*.tmp
+
+# Bases de datos locales
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de respaldo
+*.bak
+*.backup
+*.old
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
+
+# Archivos comprimidos
+*.zip
+*.tar.gz
+*.tgz
