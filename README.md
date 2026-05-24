@@ -201,18 +201,22 @@ kubectl get pods -n historia-clinica-distribuida
 # Verificar que todos los servicios están activos
 kubectl get svc -n historia-clinica-distribuida
 
-# Obtener la IP de Minikube
-minikube ip
+# Guardar la IP de Minikube en una variable
+MINIKUBE_IP=$(minikube ip)
+echo "Minikube IP: $MINIKUBE_IP"
 ```
 
 ### 4. Acceder al sistema
 
 ```bash
+# Guardar la IP de Minikube en una variable (si no se ha hecho antes)
+MINIKUBE_IP=$(minikube ip)
+
 # Frontend web
-http://<MINIKUBE_IP>:30080
+echo "Frontend: http://$MINIKUBE_IP:30080"
 
 # API FHIR (metadata/health check)
-http://<MINIKUBE_IP>:30080/fhir/metadata
+curl http://$MINIKUBE_IP:30080/fhir/metadata
 ```
 
 ### 5. Detener el sistema
@@ -297,8 +301,10 @@ CREATE INDEX idx_diagnostico_codigo ON diagnostico(codigo_cie10);
 
 El sistema expone una API REST compatible con **HL7 FHIR R4** a través de los servidores HAPI FHIR. El endpoint base es:
 
-```
-http://<MINIKUBE_IP>:30080/fhir
+```bash
+MINIKUBE_IP=$(minikube ip)
+# Endpoint base:
+# http://$MINIKUBE_IP:30080/fhir
 ```
 
 ### Recursos FHIR soportados
@@ -315,7 +321,8 @@ http://<MINIKUBE_IP>:30080/fhir
 #### Crear un paciente
 
 ```bash
-curl -X POST "http://<MINIKUBE_IP>:30080/fhir/Patient" \
+MINIKUBE_IP=$(minikube ip)
+curl -X POST "http://$MINIKUBE_IP:30080/fhir/Patient" \
   -H "Content-Type: application/fhir+json" \
   -d '{
     "resourceType": "Patient",
@@ -329,13 +336,15 @@ curl -X POST "http://<MINIKUBE_IP>:30080/fhir/Patient" \
 #### Buscar paciente por identificación
 
 ```bash
-curl "http://<MINIKUBE_IP>:30080/fhir/Patient?identifier=123456789"
+MINIKUBE_IP=$(minikube ip)
+curl "http://$MINIKUBE_IP:30080/fhir/Patient?identifier=123456789"
 ```
 
 #### Registrar signos vitales
 
 ```bash
-curl -X POST "http://<MINIKUBE_IP>:30080/fhir/Observation" \
+MINIKUBE_IP=$(minikube ip)
+curl -X POST "http://$MINIKUBE_IP:30080/fhir/Observation" \
   -H "Content-Type: application/fhir+json" \
   -d '{
     "resourceType": "Observation",
@@ -352,7 +361,8 @@ curl -X POST "http://<MINIKUBE_IP>:30080/fhir/Observation" \
 #### Registrar diagnóstico
 
 ```bash
-curl -X POST "http://<MINIKUBE_IP>:30080/fhir/Condition" \
+MINIKUBE_IP=$(minikube ip)
+curl -X POST "http://$MINIKUBE_IP:30080/fhir/Condition" \
   -H "Content-Type: application/fhir+json" \
   -d '{
     "resourceType": "Condition",
@@ -365,7 +375,8 @@ curl -X POST "http://<MINIKUBE_IP>:30080/fhir/Condition" \
 #### Health check
 
 ```bash
-curl "http://<MINIKUBE_IP>:30080/fhir/metadata"
+MINIKUBE_IP=$(minikube ip)
+curl "http://$MINIKUBE_IP:30080/fhir/metadata"
 ```
 
 ### Headers de respuesta útiles
@@ -378,7 +389,7 @@ curl "http://<MINIKUBE_IP>:30080/fhir/metadata"
 
 ## 🖥 Frontend
 
-El frontend es una **aplicación web estática** (HTML5 + CSS3 + JavaScript vanilla) servida por Nginx y accesible en `http://<MINIKUBE_IP>:30080`.
+El frontend es una **aplicación web estática** (HTML5 + CSS3 + JavaScript vanilla) servida por Nginx y accesible en `http://$MINIKUBE_IP:30080` (donde `MINIKUBE_IP=$(minikube ip)`).
 
 ### Módulos funcionales
 
@@ -523,7 +534,8 @@ El sistema está diseñado para demostrar **tolerancia a fallos** en dos niveles
 ./simulate-node-failure.sh hapi-sincelejo
 
 # Verificar que el sistema sigue respondiendo
-curl http://<MINIKUBE_IP>:30080/fhir/metadata
+MINIKUBE_IP=$(minikube ip)
+curl http://$MINIKUBE_IP:30080/fhir/metadata
 # ✅ Nginx redirige automáticamente a Bogotá o Medellín
 ```
 
